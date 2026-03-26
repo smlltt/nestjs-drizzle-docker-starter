@@ -6,6 +6,8 @@ export const env = {
   dbUser: process.env.DB_USER ?? 'postgres',
   dbPassword: process.env.DB_PASSWORD ?? 'postgres',
   dbName: process.env.DB_NAME ?? 'nestjs_drizzle',
+  jwtSecret: process.env.JWT_SECRET ?? 'dev-only-change-me',
+  jwtExpiresIn: process.env.JWT_EXPIRES_IN ?? '1d',
   runMigrations:
     (process.env.RUN_MIGRATIONS ??
       (process.env.NODE_ENV === 'test' ? 'false' : 'true')) === 'true',

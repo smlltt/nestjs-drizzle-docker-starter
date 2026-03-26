@@ -6,8 +6,7 @@ This project is a Dockerized NestJS API that uses:
 - Drizzle ORM
 - PostgreSQL 16
 - Docker Compose
-
-It is set up similarly to a TypeORM + Docker walkthrough, but with Drizzle ORM and SQL migrations.
+- JWT Auth (Passport)
 
 ## Quick Start (Docker)
 
@@ -63,9 +62,9 @@ docker compose -f docker-compose.local.yml up --build
 - Name: `local-postgres` (any name)
 - Host: `postgres`
 - Port: `5432`
-- Maintenance DB: `postgres`
-- Username: `DB_USER` (default `postgres`)
-- Password: `DB_PASSWORD` (default `postgres`)
+- Maintenance DB: `nestjs_drizzle` (or `postgres`)
+- Username: `postgres` (or your `DB_USER` value from `.env`)
+- Password: `postgres` (or your `DB_PASSWORD` value from `.env`)
 
 Optional cleanup:
 
@@ -102,6 +101,77 @@ npm run start:dev
 ```
 
 The app runs migrations on startup when `RUN_MIGRATIONS=true`.
+
+## JWT Auth (Passport)
+
+This starter includes JWT auth with Passport.
+
+### Auth endpoints
+
+- `POST /auth/register`
+- `POST /auth/login`
+- `GET /auth/me` (requires Bearer token)
+
+### Auth environment variables
+
+Add these in `.env`:
+
+```env
+JWT_SECRET=dev-only-change-me
+JWT_EXPIRES_IN=1d
+```
+
+Use a strong random value for `JWT_SECRET` in production.
+
+### Quick auth test
+
+Register:
+
+```bash
+curl -X POST http://localhost:3000/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"email":"sam@example.com","name":"Sam","password":"secret123"}'
+```
+
+Login:
+
+```bash
+curl -X POST http://localhost:3000/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"sam@example.com","password":"secret123"}'
+```
+
+Copy `accessToken` from login/register response, then:
+
+```bash
+curl http://localhost:3000/auth/me \
+  -H "Authorization: Bearer <ACCESS_TOKEN>"
+```
+
+### Notes
+
+- Passwords are hashed with `bcryptjs` before storing in the database.
+- `/users` returns user profile fields and does not return password hash.
+
+## Running Tests
+
+- Unit tests:
+
+```bash
+npm run test
+```
+
+- Coverage:
+
+```bash
+npm run test:cov
+```
+
+- E2E tests:
+
+```bash
+npm run test:e2e
+```
 
 ## Drizzle Commands
 
